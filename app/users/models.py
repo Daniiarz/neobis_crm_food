@@ -1,3 +1,77 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
+    PermissionsMixin
 from django.db import models
 
-# Create your models here.
+
+class Role(models.Model):
+    """
+        Role model. Used as a model to group user to specific group depending on their type of work
+    """
+
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class UserManager(BaseUserManager):
+
+    def create_user(self, first_name, last_name, email, phone_number, role_id, password=None, **extra_fields):
+        """Creates and saves a new User"""
+        if not email:
+            raise ValueError("Email address is required!")
+
+        if not first_name or not last_name:
+            raise ValueError("First and Last name are required!")
+
+        if not phone_number:
+            raise ValueError("Phone number is required")
+
+        if not role_id:
+            raise ValueError("Role is required!")
+
+        login = f"{first_name}_{last_name}"
+        user = self.model(email=self.normalize_email(email),
+                          first_name=first_name,
+                          last_name=last_name,
+                          login=login,
+                          phone_number=phone_number,
+                          role_id=role_id,
+                          **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+
+        return user
+
+    def create_superuser(self, email, password, **extra_field):
+        """Creates and saves new superuser"""
+        user = self.create_user(email, password, **extra_field)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    """Custom user model that supports using email instead of username"""
+    email = models.EmailField(max_length=255, unique=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    login = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255)
+    role_id = models.ForeignKey(Role, on_delete=models.CASCADE, related_name="workers")
+
+    date_of_add = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email'
+
+    def __str__(self):
+        return f"{self.get_full_name()}, {self.login}"
+
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
