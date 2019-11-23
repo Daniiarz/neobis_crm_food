@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin
 from django.db import models
+from django.db.utils import IntegrityError
+
+from .utils import login_creator
 
 
 class Role(models.Model):
@@ -16,26 +19,33 @@ class Role(models.Model):
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, first_name, last_name, email, phone_number, role_id, password=None, **extra_fields):
+    def create_user(self, first_name, last_name, email, phone, role_id, **extra_fields):
         """Creates and saves a new User"""
+
         if not email:
             raise ValueError("Email address is required!")
 
         if not first_name or not last_name:
             raise ValueError("First and Last name are required!")
 
-        if not phone_number:
+        if not phone:
             raise ValueError("Phone number is required")
 
         if not role_id:
-            raise ValueError("Role is required!")
+            raise IntegrityError("Role is required!")
 
-        login = f"{first_name}_{last_name}"
+        login = login_creator(last_name, first_name)
+
+        try:
+            password = extra_fields["password"]
+        except KeyError:
+            password = phone
+
         user = self.model(email=self.normalize_email(email),
                           first_name=first_name,
                           last_name=last_name,
                           login=login,
-                          phone_number=phone_number,
+                          phone=phone,
                           role_id=role_id,
                           **extra_fields)
         user.set_password(password)
@@ -43,9 +53,17 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, password, **extra_field):
+    def create_superuser(self, first_name, last_name, email, phone, role_id, **extra_fields):
         """Creates and saves new superuser"""
-        user = self.create_user(email, password, **extra_field)
+
+        user = self.create_user(
+            email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            role_id=role_id,
+            **extra_fields
+        )
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
