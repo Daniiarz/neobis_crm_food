@@ -6,7 +6,7 @@ from meals import models
 fake = Faker()
 
 
-class RoleFactory(factory.django.DjangoModelFactory):
+class TableFactory(factory.django.DjangoModelFactory):
     """
         Class for creating fake department models
     """

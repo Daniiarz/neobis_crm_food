@@ -13,7 +13,18 @@ class RoleSerializer(serializers.ModelSerializer):
             "id",
             "name"
         )
-        read_only_Fields = ('id',)
+        read_only_fields = ('id',)
+
+
+class RoleDeleteSerializer(serializers.ModelSerializer):
+    """
+        Class for deleting role instances
+    """
+    class Meta:
+        model = Role
+        fields = (
+            "id",
+        )
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

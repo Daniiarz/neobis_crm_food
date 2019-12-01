@@ -89,7 +89,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
     def __str__(self):
-        return f"{self.get_full_name()}, {self.login}"
+        return f"{self.get_full_name()}, {self.phone}"
 
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"

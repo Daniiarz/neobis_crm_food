@@ -1,10 +1,10 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
 
+# router = DefaultRouter()
+# router.register(r"roles", views.RoleViewSet)
+
 urlpatterns = [
-    path(
-        'roles/',
-        view=views.RoleViews.as_view(),
-        name='roles'
-    ),
+    path("roles/", views.RoleViews.as_view(), name="roles")
 ]

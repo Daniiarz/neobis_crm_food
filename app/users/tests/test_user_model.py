@@ -1,7 +1,9 @@
 from django.test import TestCase
-from . import utils
-
 from django.db.utils import IntegrityError
+
+from .utils import RoleFactory, fake
+from users.models import User
+from users.utils import login_creator
 
 
 class TestUserModel(TestCase):
@@ -9,14 +11,18 @@ class TestUserModel(TestCase):
         Testing publicly available endpoints for user app
     """
 
-    def test_roles_model(self):
+    def setUp(self):
         """
-            Testing Role model creation
+            Initial setUp for all tests
         """
-
-        role_name = "Waiter"
-        role = utils.RoleFactory(name=role_name)
-        self.assertEqual(str(role), role_name)
+        self.role = RoleFactory()
+        self.user_data = {
+            "email": fake.email(),
+            "first_name": fake.first_name(),
+            "last_name": fake.last_name(),
+            "phone": fake.phone_number(),
+            "role_id": self.role,
+        }
 
     def test_create_user_without_role(self):
         """
@@ -24,9 +30,10 @@ class TestUserModel(TestCase):
         """
 
         role = None
+        self.user_data["role_id"] = role
 
         with self.assertRaises(IntegrityError):
-            user = utils.UserFactory(role_id=role)
+            user = User.objects.create_user(**self.user_data)
 
     def test_create_user_without_first_name(self):
         """
@@ -34,9 +41,10 @@ class TestUserModel(TestCase):
         """
 
         first_name = ""
+        self.user_data["first_name"] = first_name
 
         with self.assertRaises(ValueError):
-            user = utils.UserFactory(first_name=first_name)
+            user = User.objects.create_user(**self.user_data)
 
     def test_create_user_without_last_name(self):
         """
@@ -44,35 +52,57 @@ class TestUserModel(TestCase):
         """
 
         last_name = ""
+        self.user_data["last_name"] = last_name
 
         with self.assertRaises(ValueError):
-            user = utils.UserFactory(last_name=last_name)
+            user = User.objects.create_user(**self.user_data)
 
     def test_create_user_without_phone_number(self):
         """
             Testing that user model can't be created without phone number
         """
 
-        phone_number = ""
+        phone = ""
+        self.user_data["phone"] = phone
 
         with self.assertRaises(ValueError):
-            user = utils.UserFactory(phone_number=phone_number)
+            user = User.objects.create_user(**self.user_data)
 
     def test_create_user_without_email(self):
 
         email = ""
+        self.user_data["email"] = email
 
         with self.assertRaises(ValueError):
-            user = utils.UserFactory(email=email)
+            user = User.objects.create_user(**self.user_data)
 
     def test_create_user_model(self):
         """
             Testing creation of user model
         """
 
-        role = utils.RoleFactory()
-        user = utils.UserFactory(role_id=role)
+        role = self.role
+        user = User.objects.create_user(**self.user_data)
 
         self.assertEqual(role, user.role_id)
-        self.assertEqual(user.login, f"{user.name}_{user.last_name}")
-        self.assertEqual(str(user), f"{user.name} {user.last_name}, {user.login}")
+        self.assertEqual(str(user), f"{user.first_name} {user.last_name}, {user.phone}")
+        self.assertTrue(user.check_password(user.phone))
+
+    def test_user_login(self):
+        """
+            Testing user login field
+        """
+
+        user = User.objects.create_user(**self.user_data)
+
+        self.assertEqual(user.login, login_creator(user.last_name, user.first_name))
+
+    def test_create_super_user(self):
+        """
+            Testing creation of super user
+        """
+
+        role = self.role
+        user = User.objects.create_superuser(**self.user_data)
+
+        self.assertTrue(user.is_superuser)
