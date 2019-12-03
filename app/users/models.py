@@ -20,7 +20,9 @@ class Role(models.Model):
 class UserManager(BaseUserManager):
 
     def create_user(self, first_name, last_name, email, phone, role_id, **extra_fields):
-        """Creates and saves a new User"""
+        """
+            Creates and saves a new User
+        """
 
         if not email:
             raise ValueError("Email address is required!")
@@ -54,7 +56,9 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, first_name, last_name, email, phone, role_id, **extra_fields):
-        """Creates and saves new superuser"""
+        """
+            Creates and saves new superuser
+        """
 
         user = self.create_user(
             email=self.normalize_email(email),
@@ -72,11 +76,13 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """Custom user model that supports using email instead of username"""
+    """
+        Custom user model that supports using email instead of username
+    """
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    login = models.CharField(max_length=255)
+    login = models.CharField(max_length=255, unique=True)
     phone = models.CharField(max_length=255)
     role_id = models.ForeignKey(Role, on_delete=models.CASCADE, related_name="workers")
 
@@ -86,7 +92,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'login'
 
     def __str__(self):
         return f"{self.get_full_name()}, {self.phone}"

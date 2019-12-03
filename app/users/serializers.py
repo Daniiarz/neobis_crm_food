@@ -44,8 +44,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return {'login': user.login, 'password': user.password}
+        User.objects.create_user(**validated_data)
+        return validated_data
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -67,3 +67,16 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "phone",
         )
         read_only_fields = ("id", "password")
+
+
+class UserDeleteSerializer(serializers.ModelSerializer):
+    """
+        Class for serializing User objects when deleting
+    """
+
+    class Meta:
+        model = User
+        fields = (
+            "id"
+        )
+
