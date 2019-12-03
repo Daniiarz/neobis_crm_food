@@ -15,18 +15,18 @@ USERS_URL = reverse("users")
 
 class TestRoleView(TestCase):
     """
-        Testing Role model endpoints
+    Testing Role model endpoints
     """
 
     def setUp(self) -> None:
         """
-            Initial setUp for all tests
+        Initial setUp for all tests
         """
         self.client = APIClient()
 
     def test_list_view(self):
         """
-            Testing listing of role models
+        Testing listing of role models
         """
         RoleFactory()
         RoleFactory()
@@ -41,7 +41,7 @@ class TestRoleView(TestCase):
 
     def test_post_role(self):
         """
-            Testing creation of role model
+        Testing creation of role model
         """
 
         payload = {
@@ -56,7 +56,7 @@ class TestRoleView(TestCase):
 
     def test_delete_role(self):
         """
-            Testing deletion of role model
+        Testing deletion of role model
         """
         role = RoleFactory(name="Admin")
 
@@ -71,12 +71,12 @@ class TestRoleView(TestCase):
 
 class TestUserEndpoints(TestCase):
     """
-        Testing user endpoints
+    Testing user endpoints
     """
 
     def setUp(self) -> None:
         """
-            Initial setUp for all tests
+        Initial setUp for all tests
         """
         self.role = RoleFactory()
         self.user_data = {
@@ -90,7 +90,7 @@ class TestUserEndpoints(TestCase):
 
     def test_get_all_users(self):
         """
-            Testing on GET method on site/users/ endpoint, should return list of users
+        Testing on GET method on site/users/ endpoint, should return list of users
         """
         User.objects.create_user(**self.user_data)
         user_data = {
@@ -111,7 +111,7 @@ class TestUserEndpoints(TestCase):
 
     def test_create_user_endpoint(self):
         """
-            Testing user creation on site/users/ endpoint
+        Testing user creation on site/users/ endpoint
         """
         self.user_data["role_id"] = self.role.id
         response = self.client.post(USERS_URL, self.user_data, format='json')
@@ -123,7 +123,7 @@ class TestUserEndpoints(TestCase):
 
     def test_user_delete_endpoint(self):
         """
-           Testing custom delete method on site/users/ endpoint
+        Testing custom delete method on site/users/ endpoint
         """
         user = User.objects.create_user(**self.user_data)
 
@@ -131,13 +131,13 @@ class TestUserEndpoints(TestCase):
             'id': user.id
         }
 
-        response = self.client.delete(ROLES_URL, payload)
+        response = self.client.delete(USERS_URL, payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_full_user_update(self):
         """
-            Testing custom update method on site/users/ endpoint
+        Testing custom update method on site/users/ endpoint
         """
         user = User.objects.create_user(**self.user_data)
         payload = {
@@ -151,4 +151,3 @@ class TestUserEndpoints(TestCase):
 
         response = self.client.put(USERS_URL, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        print(response.data)

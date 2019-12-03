@@ -5,8 +5,8 @@ from django.test import TestCase
 from users.models import User
 from users.serializers import RoleSerializer as RS, UserCreateSerializer as UCR, \
     UserDetailSerializer as UDS
-from users.utils import login_creator
 from .utils import RoleFactory, fake
+
 
 class TestSerializers(TestCase):
     """
