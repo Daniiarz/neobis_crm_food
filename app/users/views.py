@@ -1,5 +1,4 @@
 from rest_framework import status
-from rest_framework.decorators import action
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.mixins import DestroyModelMixin
 from rest_framework.response import Response

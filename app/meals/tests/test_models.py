@@ -26,6 +26,9 @@ class TestModels(TestCase):
         """
         department = None
 
+        with self.assertRaises(IntegrityError):
+            MealCategoryFactory(department_id=department)
+
     def test_meal_category(self):
         """
             Testing creation of Meal Category model
