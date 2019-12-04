@@ -1,0 +1,13 @@
+language: python
+python:
+- '3.6'
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database crmfood_test_db;' -U postgres
+install:
+  - pip install -r requirements/ci.txt
+script:
+  - coverage run manage.py test --settings=neobis_courses_project.settings.ci -v 2 && flake8
+after_success:
+  - codecov

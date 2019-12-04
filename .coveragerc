@@ -1,0 +1,10 @@
+[run]
+source=
+    neobis_crm_food/
+
+omit=
+    # omit every thing in every migration folder
+    */.migrations/*
+
+    # omit every thing in every __pycache__ folder
+    */.__pycache__/*

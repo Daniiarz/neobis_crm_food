@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from . import serializers
 from .models import Department, Meal, MealCategory
+from core.mixins import CustomUpdateMixin
 
 
 class DepartamentView(ListCreateAPIView, DestroyModelMixin):
@@ -66,7 +67,7 @@ class MealCategoryView(ListCreateAPIView, DestroyModelMixin):
         instance.delete()
 
 
-class MealView(ListCreateAPIView, DestroyModelMixin, UpdateModelMixin):
+class MealView(ListCreateAPIView, DestroyModelMixin, CustomUpdateMixin):
     """
     Class responsible for endpoints of Meals model
     """
@@ -95,18 +96,7 @@ class MealView(ListCreateAPIView, DestroyModelMixin, UpdateModelMixin):
         instance.delete()
 
     def put(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = get_object_or_404(self.model, id=request.data["id"])
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
+        return self.update(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)

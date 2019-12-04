@@ -4,7 +4,7 @@ from .models import Role, User
 
 class RoleSerializer(serializers.ModelSerializer):
     """
-        Class for serializing role objects
+    Class for serializing role objects
     """
 
     class Meta:
@@ -18,7 +18,7 @@ class RoleSerializer(serializers.ModelSerializer):
 
 class RoleDeleteSerializer(serializers.ModelSerializer):
     """
-        Class for deleting role instances
+    Class for deleting role instances
     """
     class Meta:
         model = Role
@@ -29,7 +29,7 @@ class RoleDeleteSerializer(serializers.ModelSerializer):
 
 class UserCreateSerializer(serializers.ModelSerializer):
     """
-        Class for serializing user objects on create
+    Class for serializing user objects on create
     """ 
     role_id = serializers.PrimaryKeyRelatedField(queryset=Role.objects.all())
 
@@ -50,7 +50,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 class UserDetailSerializer(serializers.ModelSerializer):
     """
-        Class for Serializing detailed information about User
+    Class for Serializing detailed information about User
     """
 
     class Meta:
@@ -71,7 +71,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 class UserDeleteSerializer(serializers.ModelSerializer):
     """
-        Class for serializing User objects when deleting
+    Class for serializing User objects when deleting
     """
 
     class Meta:
@@ -80,3 +80,21 @@ class UserDeleteSerializer(serializers.ModelSerializer):
             "id"
         )
 
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    """
+    Class for Serializing detailed information about User
+    """
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "first_name",
+            "last_name",
+            "password",
+            "email",
+            "role_id",
+            "phone",
+        )
+        read_only_fields = ("id",)

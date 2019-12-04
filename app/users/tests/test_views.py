@@ -90,7 +90,7 @@ class TestUserEndpoints(TestCase):
 
     def test_get_all_users(self):
         """
-        Testing on GET method on site/users/ endpoint, should return list of users
+        Testing on GET method on users/ endpoint, should return list of users
         """
         User.objects.create_user(**self.user_data)
         user_data = {
@@ -111,7 +111,7 @@ class TestUserEndpoints(TestCase):
 
     def test_create_user_endpoint(self):
         """
-        Testing user creation on site/users/ endpoint
+        Testing user creation on users/ endpoint
         """
         self.user_data["role_id"] = self.role.id
         response = self.client.post(USERS_URL, self.user_data, format='json')
@@ -123,7 +123,7 @@ class TestUserEndpoints(TestCase):
 
     def test_user_delete_endpoint(self):
         """
-        Testing custom delete method on site/users/ endpoint
+        Testing custom delete method on users/ endpoint
         """
         user = User.objects.create_user(**self.user_data)
 
@@ -135,19 +135,53 @@ class TestUserEndpoints(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_full_user_update(self):
+    def test_patch_user_update(self):
         """
-        Testing custom update method on site/users/ endpoint
+        Testing custom PATCH method on users/ endpoint
         """
         user = User.objects.create_user(**self.user_data)
         payload = {
             "id": user.id,
-            "name": "Aika",
-            "surname": "Ivanova",
+            "first_name": "Aika",
+            "last_name": "Ivanova",
             "password": "Some cool pass",
             "email": "sample@example.com",
-            "phone": "0777777777"
+            "phone": "0771234123"
+        }
+
+        response = self.client.patch(USERS_URL, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response_data = response.data
+
+        self.assertEqual(response_data["first_name"], payload["first_name"])
+        self.assertEqual(response_data["last_name"], payload["last_name"])
+        self.assertEqual(response_data["email"], payload["email"])
+        self.assertEqual(response_data["phone"], payload["phone"])
+
+    def test_put_user_update(self):
+        """
+        Testing custom PUT method on users/ endpoint
+        """
+        role = RoleFactory()
+        user = User.objects.create_user(**self.user_data)
+        payload = {
+            "id": user.id,
+            "first_name": "Aika",
+            "last_name": "Ivanova",
+            "password": "Some cool pass",
+            "email": "sample@example.com",
+            "role_id": role.id,
+            "phone": "0771234123"
         }
 
         response = self.client.put(USERS_URL, payload, format="json")
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response_data = response.data
+
+        self.assertEqual(response_data["first_name"], payload["first_name"])
+        self.assertEqual(response_data["last_name"], payload["last_name"])
+        self.assertEqual(response_data["email"], payload["email"])
+        self.assertEqual(response_data["phone"], payload["phone"])
+        self.assertEqual(response_data["role_id"], payload["role_id"])
