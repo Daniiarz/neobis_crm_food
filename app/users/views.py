@@ -11,14 +11,7 @@ class RoleViews(ListCreateAPIView, CustomDeleteMixin):
     """
     model = Role
     queryset = Role.objects.all()
-
-    def get_serializer_class(self):
-        """
-        Method for getting serializer depending on request method
-        """
-        if self.request.method == "DELETE":
-            return serializers.RoleDeleteSerializer
-        return serializers.RoleSerializer
+    serializer_class = serializers.RoleSerializer
 
     def delete(self, request, *args, **kwargs):
         """
@@ -43,12 +36,12 @@ class UserViews(ListCreateAPIView, CustomDeleteMixin, CustomUpdateMixin):
         """
         method = self.request.method
 
-        if method == "DELETE":
-            return serializers.UserDeleteSerializer
         if method == "POST":
             return serializers.UserCreateSerializer
+
         if method == "PUT" or method == "PATCH":
             return serializers.UserUpdateSerializer
+
         return serializers.UserDetailSerializer
 
     def delete(self, request, *args, **kwargs):

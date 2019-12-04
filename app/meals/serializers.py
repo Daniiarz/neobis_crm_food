@@ -16,18 +16,6 @@ class DepartmentSerializer(serializers.ModelSerializer):
         read_only_fields = ("id",)
 
 
-class DepartmentDeleteSerializer(serializers.ModelSerializer):
-    """
-        Class for serializing Department models on DELETE method
-    """
-
-    class Meta:
-        model = Department
-        fields = {
-            "id"
-        }
-
-
 class MealCategorySerializer(serializers.ModelSerializer):
     department_id = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all()
@@ -41,17 +29,6 @@ class MealCategorySerializer(serializers.ModelSerializer):
             "department_id",
         )
         read_only_fields = ("id",)
-
-
-class MealCategoryDeleteSerializer(serializers.ModelSerializer):
-    """
-    Class for serializing MealCategory models on DELETE method
-    """
-    class Meta:
-        model = MealCategory
-        fields = (
-            "id"
-        )
 
 
 class MealSerializer(serializers.ModelSerializer):
@@ -74,12 +51,14 @@ class MealSerializer(serializers.ModelSerializer):
         read_only_fields = ("id",)
 
 
-class MealDeleteSerializer(object):
+class CategoriesByDep(serializers.ModelSerializer):
     """
-    Class for serializing Meal models on DELETE method
+    Class for serializing categories by their department
     """
+    categories = MealCategorySerializer(many=True, read_only=True)
+
     class Meta:
-        model = Meal
+        model = Department
         fields = (
-            "id",
+            "categories",
         )

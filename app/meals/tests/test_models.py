@@ -51,7 +51,7 @@ class TestModels(TestCase):
         category = None
 
         with self.assertRaises(IntegrityError):
-            meal = MealFactory(category_id=category)
+            MealFactory(category_id=category)
 
     def test_meals(self):
         """

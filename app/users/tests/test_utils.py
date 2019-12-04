@@ -1,7 +1,5 @@
 from django.test import TestCase
 
-from .utils import RoleFactory, fake
-from users.models import User
 from users.utils import login_creator
 
 

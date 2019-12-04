@@ -33,7 +33,7 @@ class TestUserModel(TestCase):
         self.user_data["role_id"] = role
 
         with self.assertRaises(IntegrityError):
-            user = User.objects.create_user(**self.user_data)
+            User.objects.create_user(**self.user_data)
 
     def test_create_user_without_first_name(self):
         """
@@ -44,7 +44,7 @@ class TestUserModel(TestCase):
         self.user_data["first_name"] = first_name
 
         with self.assertRaises(ValueError):
-            user = User.objects.create_user(**self.user_data)
+            User.objects.create_user(**self.user_data)
 
     def test_create_user_without_last_name(self):
         """
@@ -55,7 +55,7 @@ class TestUserModel(TestCase):
         self.user_data["last_name"] = last_name
 
         with self.assertRaises(ValueError):
-            user = User.objects.create_user(**self.user_data)
+            User.objects.create_user(**self.user_data)
 
     def test_create_user_without_phone_number(self):
         """
@@ -66,7 +66,7 @@ class TestUserModel(TestCase):
         self.user_data["phone"] = phone
 
         with self.assertRaises(ValueError):
-            user = User.objects.create_user(**self.user_data)
+            User.objects.create_user(**self.user_data)
 
     def test_create_user_without_email(self):
 
@@ -74,7 +74,7 @@ class TestUserModel(TestCase):
         self.user_data["email"] = email
 
         with self.assertRaises(ValueError):
-            user = User.objects.create_user(**self.user_data)
+            User.objects.create_user(**self.user_data)
 
     def test_create_user_model(self):
         """
@@ -102,7 +102,6 @@ class TestUserModel(TestCase):
             Testing creation of super user
         """
 
-        role = self.role
         user = User.objects.create_superuser(**self.user_data)
 
         self.assertTrue(user.is_superuser)
