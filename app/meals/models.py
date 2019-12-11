@@ -1,5 +1,7 @@
 from django.db import models
 
+from orders.models import Order
+
 
 class Department(models.Model):
     """
@@ -27,7 +29,7 @@ class MealCategory(models.Model):
 
 class Meal(models.Model):
     """
-        Class for holding Meal objects
+    Class for holding Meal objects
     """
 
     name = models.CharField(max_length=50)
@@ -39,3 +41,12 @@ class Meal(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.price} - {self.description}"
+
+
+class SpecificMeal(models.Model):
+    """
+    Class for holding multiple Meal models adding amount field
+    """
+    meal_id = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="specific_meals")
+    amount = models.IntegerField()
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="specific_meals")

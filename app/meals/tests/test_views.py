@@ -242,7 +242,7 @@ class TestOtherViews(TestCase):
         category1 = MealCategoryFactory(department_id=department1)
         MealCategoryFactory(department_id=department2)
 
-        response = self.client.get(f"/categoriesByDepartment/{department1.id}")
+        response = self.client.get(reverse("meals"), args=[category1.id])
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

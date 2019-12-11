@@ -2,13 +2,14 @@ import factory
 from faker import Faker
 
 from meals import models
+from orders.tests.utils import TableFactory, OrderFactory
 
 fake = Faker()
 
 
 class DepartmentFactory(factory.django.DjangoModelFactory):
     """
-        Class for creating fake department models
+    Class for creating fake department models
     """
 
     class Meta:
@@ -31,7 +32,7 @@ class MealCategoryFactory(factory.django.DjangoModelFactory):
 
 class MealFactory(factory.django.DjangoModelFactory):
     """
-        Class for creating fake meal models
+    Class for creating fake meal models
     """
 
     class Meta:
@@ -41,3 +42,16 @@ class MealFactory(factory.django.DjangoModelFactory):
     category_id = factory.SubFactory(MealCategoryFactory)
     price = fake.pyint(min_value=100, max_value=9999, step=1)
     description = fake.paragraph(nb_sentences=3)
+
+
+class SMFactory(factory.django.DjangoModelFactory):
+    """
+    Class for creating fake Specific Meal models
+    """
+
+    class Meta:
+        model = models.SpecificMeal
+
+    meal_id = factory.SubFactory(MealFactory)
+    amount = fake.pyint(min_value=1, max_value=10)
+    order_id = factory.SubFactory(OrderFactory)
