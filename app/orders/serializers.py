@@ -32,5 +32,5 @@ class OrderSerializer(serializers.ModelSerializer):
             "table_name",
             "is_open",
             "date",
-
         )
+        
