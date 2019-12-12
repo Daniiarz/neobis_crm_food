@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MealCategory, Meal, Department
+from .models import MealCategory, Meal, Department, SpecificMeal
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -62,3 +62,16 @@ class CategoriesByDep(serializers.ModelSerializer):
         fields = (
             "categories",
         )
+
+
+class SmSerializer(serializers.ModelSerializer):
+    """
+    Class for serializing Specific Meal objects
+    """
+
+    class Meta:
+        model = SpecificMeal
+        fields = (
+            "meal_id",
+            "amount",
+         )

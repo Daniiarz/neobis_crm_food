@@ -2,7 +2,7 @@ import factory
 from faker import Faker
 
 from meals import models
-from orders.tests.utils import TableFactory, OrderFactory
+from orders.tests.utils import OrderFactory
 
 fake = Faker()
 

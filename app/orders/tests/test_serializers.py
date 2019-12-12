@@ -36,24 +36,23 @@ class TestSerializers(TestCase):
         payload = {
             "waiter_id": user.id,
             "table_id": table.id,
-            "meals": [
+            "meals_id": [
                 {
-                    "id": meal.id,
+                    "meal_id": meal.id,
                     "amount": 3,
                 },
                 {
-                    "id": meal2.id,
+                    "meal_id": meal2.id,
                     "amount": 5,
                 }
             ]
         }
 
-        serializer = serializers.OrderSerialzier(data=payload)
+        serializer = serializers.OrderSerializer(data=payload)
         valid = serializer.is_valid()
         serializer.save()
-        print(serializer.data)
 
-        exists = Order.objects.filter(pk=serializer.data["id"]).exists()
+        exists = Order.objects.all()[0]
 
         self.assertTrue(valid)
-        self.assertTrue(exists)
+        print(serializer.data)

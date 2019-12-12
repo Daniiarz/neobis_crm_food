@@ -30,7 +30,7 @@ class RoleDeleteSerializer(serializers.ModelSerializer):
 class UserCreateSerializer(serializers.ModelSerializer):
     """
     Class for serializing user objects on create
-    """ 
+    """
     role_id = serializers.PrimaryKeyRelatedField(queryset=Role.objects.all())
 
     class Meta:
