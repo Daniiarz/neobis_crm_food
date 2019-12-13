@@ -1,17 +1,18 @@
 from django.test import TestCase
 
 from meals import serializers
-from .utils import DepartmentFactory, MealCategoryFactory, fake
+from .utils import DepartmentFactory, MealCategoryFactory, MealFactory, fake
+from orders.tests.utils import OrderFactory
 
 
 class TestSerializers(TestCase):
     """
-        Testing serializers for Meal, MealCategory, and Department models
+    Testing serializers for Meal, MealCategory, and Department models
     """
 
     def test_department_serializer(self):
         """
-            Testing Department serializer for validity against some data
+        Testing Department serializer for validity against some data
         """
         payload = {
             "name": "Kitchen"
@@ -23,7 +24,7 @@ class TestSerializers(TestCase):
 
     def test_meal_category_serializer(self):
         """
-            Testing MealCategory serializer for validity against some data
+        Testing MealCategory serializer for validity against some data
         """
         department = DepartmentFactory()
         payload = {
@@ -37,7 +38,7 @@ class TestSerializers(TestCase):
 
     def test_meal_serializer(self):
         """
-            Testing Meal serializer for validity against some data
+        Testing Meal serializer for validity against some data
         """
         meal_category = MealCategoryFactory()
         payload = {
@@ -50,3 +51,12 @@ class TestSerializers(TestCase):
         serializer = serializers.MealSerializer(data=payload)
         valid = serializer.is_valid()
         self.assertTrue(valid)
+
+    def test_specific_meal_serializer(self):
+        """
+        Testing Specific Meal serializer
+        """
+        meal = MealFactory()
+        meal2 = MealFactory()
+
+        order = OrderFactory()

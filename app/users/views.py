@@ -61,4 +61,3 @@ class UserViews(ListCreateAPIView, CustomDeleteMixin, CustomUpdateMixin):
         Custom PATCH method defined in CustomUpdateMixin
         """
         return self.partial_update(request, *args, **kwargs)
-

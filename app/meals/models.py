@@ -49,4 +49,4 @@ class SpecificMeal(models.Model):
     """
     meal_id = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="specific_meals")
     amount = models.IntegerField()
-    order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="specific_meals")
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="meals_id")

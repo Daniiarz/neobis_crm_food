@@ -85,4 +85,3 @@ class TestSerializers(TestCase):
         serializer = UDS(data=user_data)
         valid = serializer.is_valid()
         self.assertTrue(valid)
-
