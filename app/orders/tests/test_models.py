@@ -1,18 +1,15 @@
 from django.db.utils import IntegrityError
 from django.test import TestCase
-from rest_framework.test import APIClient
 
 from meals.tests.utils import SMFactory
 from orders import models
-from .utils import TableFactory, create_user_model, OrderFactory
+from .utils import OrderFactory, TableFactory, create_user_model
 
 
 class TestModels(TestCase):
     """
         Class for testing meals and related models
     """
-    def setUp(self) -> None:
-        self.client = APIClient()
 
     def test_tables(self):
         """
@@ -65,3 +62,38 @@ class TestModels(TestCase):
 
         with self.assertRaises(IntegrityError):
             OrderFactory(table_id=table)
+
+
+class TestCheckModel(TestCase):
+    """
+    Class for testing check model
+    """
+
+    def test_check_model_creation(self):
+        """
+        Testing creation of check model
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        check = models.Check.objects.create(order_id=order, service_fee=123, total_sum=1234)
+
+        self.assertEqual(str(check), f"Order ID-{check.order_id.id}, Date-{check.date}, Total sum-{check.total_sum}")
+
+    def test_create_check(self):
+        """
+        Testing custom create check method Of CheckManager
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        s_meal = SMFactory(order_id=order)
+        s_meal2 = SMFactory(order_id=order)
+
+        total_sum = s_meal.get_total_price() + s_meal2.get_total_price()
+
+        check = models.Check.objects.create_check(order_id=order)
+
+        self.assertEqual(check.total_sum, total_sum)
+        self.assertEqual(check.service_fee, total_sum / 4)
+        self.assertEqual(order.is_open, False)

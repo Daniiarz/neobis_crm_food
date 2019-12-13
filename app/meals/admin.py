@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Meal, MealCategory, Department
+
+from .models import Department, Meal, MealCategory
 
 # Register your models here.
 admin.site.register(Meal)

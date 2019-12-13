@@ -7,6 +7,7 @@ class CustomUpdateMixin:
     """
     Custom update mixin for my views
     """
+
     def custom_get_object(self):
         """
         Returns the object the view is displaying.

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import MealCategory, Meal, Department, SpecificMeal
+from .models import Department, Meal, MealCategory, SpecificMeal
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -78,5 +78,4 @@ class SmSerializer(serializers.ModelSerializer):
         fields = (
             "meal_id",
             "amount",
-         )
-
+        )

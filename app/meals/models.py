@@ -50,3 +50,11 @@ class SpecificMeal(models.Model):
     meal_id = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="specific_meals")
     amount = models.IntegerField()
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="meals_id")
+
+    def get_total_price(self):
+        """
+        Getting amount * meal_price
+        """
+        total = self.meal_id.price * self.amount
+
+        return total

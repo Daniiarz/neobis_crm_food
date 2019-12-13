@@ -1,9 +1,9 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 
+from core.mixins import CustomDeleteMixin, CustomUpdateMixin
 from . import serializers
 from .models import Department, Meal, MealCategory
-from core.mixins import CustomUpdateMixin, CustomDeleteMixin
 
 
 class DepartamentView(ListCreateAPIView, CustomDeleteMixin):

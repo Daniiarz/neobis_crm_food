@@ -1,9 +1,8 @@
 from django.test import TestCase
-from orders import serializers
-from orders.models import Order
 
-from .utils import create_user_model, TableFactory
-from meals.tests.utils import MealFactory
+from meals.tests.utils import MealFactory, SMFactory
+from orders import serializers
+from .utils import OrderFactory, TableFactory, create_user_model
 
 
 class TestSerializers(TestCase):
@@ -49,7 +48,26 @@ class TestSerializers(TestCase):
 
         serializer = serializers.OrderSerializer(data=payload)
         valid = serializer.is_valid()
+        serializer.save(waiter_id=user)
+
+        self.assertTrue(valid)
+
+    def test_check_serializer(self):
+        """
+        Testing Check serializer
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        SMFactory(order_id=order)
+        SMFactory(order_id=order)
+
+        payload = {
+            "order_id": order.id
+        }
+
+        serializer = serializers.CheckSerializer(data=payload)
+        valid = serializer.is_valid()
         serializer.save()
-        exists = Order.objects.all()
 
         self.assertTrue(valid)

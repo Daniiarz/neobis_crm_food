@@ -1,11 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from meals.models import Department, MealCategory, Meal
 from meals import serializers
+from meals.models import Department, Meal, MealCategory
 from .utils import DepartmentFactory, MealCategoryFactory, MealFactory, fake
 
 DEPARTMENT_URL = reverse("departments")
@@ -229,6 +228,7 @@ class TestOtherViews(TestCase):
     """
     Testing other views, which belongs to meals
     """
+
     def setUp(self) -> None:
         self.client = APIClient()
 
@@ -245,8 +245,3 @@ class TestOtherViews(TestCase):
         response = self.client.get(reverse("meals"), args=[category1.id])
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        serializer = serializers.MealCategorySerializer(category1)
-
-        self.assertIn(response.data, serializer.data)
-        self.assertEqual(response.data[0]["id"], department1.id)

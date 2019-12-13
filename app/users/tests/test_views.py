@@ -1,12 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from .utils import RoleFactory, fake
-from users.models import Role, User
 from users import serializers
+from users.models import Role, User
+from .utils import RoleFactory, fake
 
 ROLES_URL = reverse("roles")
 

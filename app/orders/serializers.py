@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from meals.models import SpecificMeal, Meal
+from meals.models import SpecificMeal
 from meals.serializers import SmSerializer
-from .models import Table, Order
+from .models import Check, Order, Table
 
 
 class TableSerializer(serializers.ModelSerializer):
@@ -25,7 +25,8 @@ class OrderSerializer(serializers.ModelSerializer):
     table_id = serializers.PrimaryKeyRelatedField(
         queryset=Table.objects.all()
     )
-    # table_name = serializers.SerializerMethodField("get_table_name")
+    table_name = serializers.SerializerMethodField("get_table_name")
+    is_open = serializers.SerializerMethodField("get_is_open")
     meals_id = SmSerializer(
         many=True
     )
@@ -36,19 +37,25 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "waiter_id",
             "table_id",
+            "table_name",
             "is_open",
             "date",
             "meals_id",
         )
-        read_only_fields = ("id", "is_open")
+        read_only_fields = ("id", "is_open", "waiter_id")
 
-    # def get_table_name(self, obj):
-    #     """
-    #     Getting table name from related Table model
-    #     """
-    #     # table = Table.objects.get(pk=obj["table_id"])
-    #     print(obj)
-    #     return "table.name"
+    def get_is_open(self, obj):
+        is_open = obj
+
+        if is_open:
+            return 1
+        else:
+            return 0
+
+    def get_table_name(self, obj):
+        table = obj.table_id
+
+        return str(table)
 
     def create(self, validated_data):
         """
@@ -58,8 +65,37 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(**validated_data)
 
         for specific_meal in meals_id:
-            meal = Meal.objects.get(pk=specific_meal["meal_id"])
-            amount = specific_meal["amount"]
-            SpecificMeal.objects.create(order_id=order, amount=amount, meal_id=meal)
+            SpecificMeal.objects.create(order_id=order, **specific_meal)
 
         return order
+
+
+class CheckSerializer(serializers.ModelSerializer):
+    """
+    Class for serializing check objects
+    """
+    meals = SmSerializer(
+        many=True,
+        source="order_id.meals_id.all",
+        read_only=True
+    )
+    order_id = serializers.PrimaryKeyRelatedField(
+        queryset=Order.objects.all()
+    )
+
+    class Meta:
+        model = Check
+        fields = (
+            "id",
+            "order_id",
+            "date",
+            "service_fee",
+            "total_sum",
+            "meals"
+        )
+        read_only_fields = ("id", "date", "service_fee", "total_sum")
+
+    def create(self, validated_data):
+        check = Check.objects.create_check(**validated_data)
+
+        return check

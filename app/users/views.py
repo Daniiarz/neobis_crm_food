@@ -1,8 +1,8 @@
 from rest_framework.generics import ListCreateAPIView
 
+from core.mixins import CustomDeleteMixin, CustomUpdateMixin
 from . import serializers
 from .models import Role, User
-from core.mixins import CustomUpdateMixin, CustomDeleteMixin
 
 
 class RoleViews(ListCreateAPIView, CustomDeleteMixin):

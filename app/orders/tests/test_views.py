@@ -1,15 +1,15 @@
 from django.test import TestCase
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from meals.tests.utils import MealFactory
+from meals.tests.utils import MealFactory, SMFactory
 from orders import models, serializers
-from .utils import TableFactory, OrderFactory, create_user_model
+from .utils import OrderFactory, TableFactory, create_user_model
 
 TABLES_URL = reverse("tables")
 ORDERS_URL = reverse("orders")
+CHECKS_URL = reverse("checks")
 
 
 class TestTableViews(TestCase):
@@ -25,8 +25,8 @@ class TestTableViews(TestCase):
         Testing GET method for table view
         """
 
-        table1 = TableFactory()
-        table2 = TableFactory()
+        TableFactory()
+        TableFactory()
         tables = models.Table.objects.all()
 
         response = self.client.get(TABLES_URL)
@@ -76,8 +76,8 @@ class TestOrderViews(TestCase):
         """
         user = create_user_model()
 
-        order1 = OrderFactory(waiter_id=user)
-        order2 = OrderFactory(waiter_id=user)
+        OrderFactory(waiter_id=user)
+        OrderFactory(waiter_id=user)
 
         orders = models.Order.objects.all()
         serializer = serializers.OrderSerializer(orders, many=True)
@@ -100,8 +100,7 @@ class TestOrderViews(TestCase):
 
         payload = {
             "table_id": table.id,
-
-            "meals_id": [
+            'meals_id': [
                 {
                     "meal_id": meal.id,
                     "amount": 4
@@ -113,6 +112,85 @@ class TestOrderViews(TestCase):
             ]
         }
 
-        response = self.client.post(ORDERS_URL, data=payload)
-        print(response.data)
+        response = self.client.post(ORDERS_URL, data=payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_delete_order(self):
+        """
+        Testing DELETE method of order view
+        """
+
+        order = OrderFactory()
+
+        payload = {
+            "id": order.id
+        }
+
+        response = self.client.delete(ORDERS_URL, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class TestCheckView(TestCase):
+    """
+    Testing Check views
+    """
+
+    def setUp(self) -> None:
+        self.client = APIClient()
+
+    def test_list_all_checks(self):
+        """
+        Testing GET method for CheckView
+        """
+
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+        order2 = OrderFactory(waiter_id=user)
+
+        SMFactory(order_id=order)
+        SMFactory(order_id=order2)
+
+        models.Check.objects.create_check(order_id=order)
+        models.Check.objects.create_check(order_id=order2)
+
+        response = self.client.get(CHECKS_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_post_check(self):
+        """
+        Testing POST method for CheckView
+        """
+
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        SMFactory(order_id=order)
+
+        payload = {
+            "order_id": order.id
+        }
+
+        response = self.client.post(CHECKS_URL, data=payload)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_delete_check(self):
+        """
+        Testing DELETE method for CheckView
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        SMFactory(order_id=order)
+
+        check = models.Check.objects.create_check(order_id=order)
+
+        payload = {
+            "id": check.id
+        }
+
+        response = self.client.delete(CHECKS_URL, data=payload)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

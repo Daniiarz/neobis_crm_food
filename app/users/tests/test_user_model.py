@@ -1,9 +1,9 @@
-from django.test import TestCase
 from django.db.utils import IntegrityError
+from django.test import TestCase
 
-from .utils import RoleFactory, fake
 from users.models import User
 from users.utils import login_creator
+from .utils import RoleFactory, fake
 
 
 class TestUserModel(TestCase):
@@ -69,7 +69,6 @@ class TestUserModel(TestCase):
             User.objects.create_user(**self.user_data)
 
     def test_create_user_without_email(self):
-
         email = ""
         self.user_data["email"] = email
 
