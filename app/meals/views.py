@@ -88,3 +88,4 @@ class MealsByCategory(RetrieveAPIView):
         meals = Meal.objects.filter(category_id=instance.id)
         serializer = serializers.MealSerializer(meals, many=True)
         return Response(serializer.data)
+

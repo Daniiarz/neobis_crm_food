@@ -71,3 +71,30 @@ class TestSerializers(TestCase):
         serializer.save()
 
         self.assertTrue(valid)
+
+    def test_meals_to_order_serializer(self):
+        """
+        Testing meals to order serializer
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        SMFactory(order_id=order)
+        SMFactory(order_id=order)
+
+        meal = MealFactory()
+
+        payload = {
+            "order_id": order.id,
+            "meals_id": [
+                {
+                    "meal_id": meal.id,
+                    "amount": 1
+                }
+            ]
+        }
+
+        serializer = serializers.MealToOrderSerializer(order, data=payload)
+        valid = serializer.is_valid()
+
+        self.assertTrue(valid)

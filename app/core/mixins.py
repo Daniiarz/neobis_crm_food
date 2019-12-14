@@ -11,7 +11,6 @@ class CustomUpdateMixin:
     def custom_get_object(self):
         """
         Returns the object the view is displaying.
-
         Gets object by an id from request
         """
         queryset = self.filter_queryset(self.get_queryset())

@@ -10,6 +10,7 @@ from .utils import OrderFactory, TableFactory, create_user_model
 TABLES_URL = reverse("tables")
 ORDERS_URL = reverse("orders")
 CHECKS_URL = reverse("checks")
+MEALS_TO_ORDERS = reverse("meals-to-orders")
 
 
 class TestTableViews(TestCase):
@@ -130,6 +131,32 @@ class TestOrderViews(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_add_meal_to_order(self):
+        """
+        Testing adding meal to order
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+        meal = MealFactory()
+        SMFactory(order_id=order)
+
+        payload = {
+            "order_id": order.id,
+            "meals_id": [
+                {
+                    "meal_id": meal.id,
+                    "amount": 123
+                }
+            ]
+        }
+
+        response = self.client.post(MEALS_TO_ORDERS, data=payload)
+
+        print(response.data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(meal.amount, 8)
+
 
 class TestCheckView(TestCase):
     """
@@ -181,6 +208,7 @@ class TestCheckView(TestCase):
         Testing DELETE method for CheckView
         """
         user = create_user_model()
+        self.client.force_authenticate(user)
         order = OrderFactory(waiter_id=user)
 
         SMFactory(order_id=order)

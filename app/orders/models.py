@@ -1,5 +1,8 @@
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError, models
+
+from meals import models as md
 
 
 class Table(models.Model):
@@ -26,6 +29,44 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.pk}, {self.date}"
 
+    def add_meals(self, request):
+        """
+        Adding meals to order
+        """
+
+        specific_meals = self.meals_id
+
+        data = request.data
+        meals = data.pop("meals_id")
+
+        for meal in meals:
+            amount = meal["amount"]
+            meal_id = meal["meal_id"]
+            try:
+                s_meal = specific_meals.get(meal_id=meal_id)
+                s_meal.amount += amount
+                s_meal.save()
+            except ObjectDoesNotExist:
+                md.SpecificMeal.objects.create(order_id=self, amount=amount, meal_id=meal_id)
+
+        return self
+
+    def remove_meal(self, request):
+        """
+        Removing some meals
+        """
+        data = request.data
+
+        specific_meal = self.meals_id.get(meal_id=data["meal_id"])
+        specific_meal.amount -= data["amount"]
+
+        if specific_meal.amount <= 0:
+            specific_meal.delete()
+        else:
+            specific_meal.save()
+
+        return self
+
 
 class CheckManager(models.Manager):
     """
@@ -37,9 +78,9 @@ class CheckManager(models.Manager):
             raise IntegrityError("Order is required!")
 
         order_id.is_open = False
-        total_sum = 0
-        for specific_meal in order_id.meals_id.all():
-            total_sum += specific_meal.get_total_price()
+
+        prices = [specific_meal.get_total_price() for specific_meal in order_id.meals_id.all()]
+        total_sum = sum(prices)
 
         service_fee = total_sum / 4
         check = self.model(

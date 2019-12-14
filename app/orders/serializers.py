@@ -99,3 +99,18 @@ class CheckSerializer(serializers.ModelSerializer):
         check = Check.objects.create_check(**validated_data)
 
         return check
+
+
+class MealToOrderSerializer(serializers.ModelSerializer):
+    """
+    Class for serializing Meals To orders
+    """
+    order_id = serializers.IntegerField(source="id")
+    meals_id = SmSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = (
+            "order_id",
+            "meals_id",
+        )
