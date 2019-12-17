@@ -17,7 +17,7 @@ class DepartamentView(ListCreateAPIView, CustomDeleteMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method, which accepts an id from request and delete corresponding model
+        function responsible for DELETE method, which accepts an id from request and delete corresponding model
         """
         return self.destroy(request, *args, **kwargs)
 
@@ -32,7 +32,7 @@ class MealCategoryView(ListCreateAPIView, CustomDeleteMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method, which accepts an id from request and delete corresponding model
+        function responsible for DELETE method, which accepts an id from request and delete corresponding model
         """
         return self.destroy(request, *args, **kwargs)
 
@@ -47,7 +47,7 @@ class MealView(ListCreateAPIView, CustomDeleteMixin, CustomUpdateMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method, which accepts an id from request and delete corresponding model
+        function responsible for DELETE method, which accepts an id from request and delete corresponding model
         """
         return self.destroy(request, *args, **kwargs)
 
@@ -60,7 +60,7 @@ class MealView(ListCreateAPIView, CustomDeleteMixin, CustomUpdateMixin):
 
 class MealCategoriesByDepartment(RetrieveAPIView):
     """
-    Class for serving list of categories, which belong to specific department
+    function responsible for serving list of categories, which belong to specific department
     """
 
     model = Department

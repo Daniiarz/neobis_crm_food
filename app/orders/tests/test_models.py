@@ -97,3 +97,14 @@ class TestCheckModel(TestCase):
         self.assertEqual(check.total_sum, total_sum)
         self.assertEqual(check.service_fee, total_sum / 4)
         self.assertEqual(order.is_open, False)
+
+    def test_create_status(self):
+        """
+        Testing creation of status
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        status = models.Status(order_id=order, name="to do")
+
+        self.assertEqual(str(status), f"{status.order_id}-{status.name}")

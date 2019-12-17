@@ -15,7 +15,7 @@ class RoleViews(ListCreateAPIView, CustomDeleteMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method defined in CustomDeleteMixin
+        function responsible for DELETE method defined in CustomDeleteMixin
         """
         return self.destroy(request, *args, **kwargs)
 
@@ -46,18 +46,18 @@ class UserViews(ListCreateAPIView, CustomDeleteMixin, CustomUpdateMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method defined in CustomDeleteMixin
+        function responsible for DELETE method defined in CustomDeleteMixin
         """
         return self.destroy(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
         """
-        Custom PUT method defined in CustomUpdateMixin
+        function responsible for PUT method defined in CustomUpdateMixin
         """
         return self.update(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
         """
-        Custom PATCH method defined in CustomUpdateMixin
+        function responsible for PATCH method defined in CustomUpdateMixin
         """
         return self.partial_update(request, *args, **kwargs)

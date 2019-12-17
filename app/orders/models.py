@@ -9,7 +9,6 @@ class Table(models.Model):
     """
     Model for holding table objects
     """
-
     name = models.CharField(max_length=50)
 
     def __str__(self):
@@ -20,7 +19,6 @@ class Order(models.Model):
     """
     Model for Order objects
     """
-
     table_id = models.ForeignKey(Table, on_delete=models.CASCADE, related_name="orders")
     waiter_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders")
     date = models.DateTimeField(auto_now_add=True)
@@ -33,7 +31,6 @@ class Order(models.Model):
         """
         Adding meals to order
         """
-
         specific_meals = self.meals_id
 
         data = request.data
@@ -72,7 +69,6 @@ class CheckManager(models.Manager):
     """
     Class for managing check instances
     """
-
     def create_check(self, order_id):
         if not order_id:
             raise IntegrityError("Order is required!")
@@ -97,7 +93,6 @@ class Check(models.Model):
     """
     Model for Check objects
     """
-
     order_id = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="order_check")
     date = models.DateTimeField(auto_now_add=True)
     service_fee = models.IntegerField()
@@ -107,3 +102,15 @@ class Check(models.Model):
 
     def __str__(self):
         return f"Order ID-{self.order_id.pk}, Date-{self.date}, Total sum-{self.total_sum}"
+
+
+class Status(models.Model):
+    """
+    Class for Order Statuses
+    """
+    name = models.CharField(max_length=50)
+    date = models.DateTimeField(auto_now_add=True)
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="statuses")
+
+    def __str__(self):
+        return f"{self.order_id}-{self.name}"

@@ -1,10 +1,11 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView, get_object_or_404
-from rest_framework.mixins import UpdateModelMixin, RetrieveModelMixin
+from rest_framework import status
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDestroyAPIView, get_object_or_404
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 
 from core.mixins import CustomDeleteMixin
 from . import serializers
-from .models import Check, Order, Table
+from .models import Check, Order, Status, Table
 
 
 class TableView(ListCreateAPIView, CustomDeleteMixin):
@@ -18,7 +19,7 @@ class TableView(ListCreateAPIView, CustomDeleteMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method, which accepts an id from request and delete corresponding model
+        function responsible for DELETE method, which accepts an id from request and delete corresponding model
         """
         return self.destroy(request, *args, **kwargs)
 
@@ -34,7 +35,7 @@ class OrderView(ListCreateAPIView, CustomDeleteMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method, which accepts an id from request and delete corresponding model
+        function responsible for DELETE method, which accepts an id from request and delete corresponding model
         """
         return self.destroy(request, *args, **kwargs)
 
@@ -63,7 +64,7 @@ class AddMealToOrder(ListCreateAPIView, UpdateModelMixin, RetrieveModelMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method, which accepts an order_id, meal_id, amount
+        function responsible for DELETE method, which accepts an order_id, meal_id, amount
         """
         instance = self.get_object()
         instance.remove_meal(request)
@@ -72,7 +73,7 @@ class AddMealToOrder(ListCreateAPIView, UpdateModelMixin, RetrieveModelMixin):
 
     def post(self, request, *args, **kwargs):
         """
-        Custom POST method that accepts order_id and meals and updates them
+        function responsible for POST method that accepts order_id and meals and updates them
         """
         instance = self.get_object()
         instance.add_meals(request)
@@ -81,7 +82,7 @@ class AddMealToOrder(ListCreateAPIView, UpdateModelMixin, RetrieveModelMixin):
 
     def get(self, request, *args, **kwargs):
         """
-        Custom GET method that accepts order_id and return all related meals
+        function responsible for GET method that accepts order_id and return all related meals
         """
         return self.retrieve(request, *args, **kwargs)
 
@@ -112,6 +113,31 @@ class CheckView(ListCreateAPIView, CustomDeleteMixin):
 
     def delete(self, request, *args, **kwargs):
         """
-        Custom DELETE method, which accepts an id from request and delete corresponding model
+        function responsible for DELETE method, which accepts an id from request and delete corresponding model
         """
         return self.destroy(request, *args, **kwargs)
+
+
+class StatusViews(RetrieveDestroyAPIView, CreateModelMixin):
+    """
+    Class responsible for status endpoints
+    """
+
+    queryset = Order.objects.all()
+    model = Order
+    lookup_field = "pk"
+    serializer_class = serializers.StatusesOfOrder
+
+    def delete(self, request, *args, **kwargs):
+        """
+        function responsible for DELETE method, which accepts an id of status and performs delete
+        """
+        instance = get_object_or_404(Status, pk=request.data["pk"])
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def post(self, request, *args, **kwargs):
+        """
+        function responsible for POST method, which accepts a status and adds it to order
+        """
+        self.create(request, *args, **kwargs)

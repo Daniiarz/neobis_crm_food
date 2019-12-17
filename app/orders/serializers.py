@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from meals.models import SpecificMeal
 from meals.serializers import SmSerializer
-from .models import Check, Order, Table
+from .models import Check, Order, Table, Status
 
 
 class TableSerializer(serializers.ModelSerializer):
@@ -114,3 +114,36 @@ class MealToOrderSerializer(serializers.ModelSerializer):
             "order_id",
             "meals_id",
         )
+
+
+class StatusSerializer(serializers.ModelSerializer):
+    """
+    Serializing status instances
+    """
+
+    class Meta:
+        model = Status
+        fields = (
+            "id",
+            "name"
+        )
+        read_only_fields = ("id",)
+
+
+class StatusesOfOrder(serializers.ModelSerializer):
+    """
+    Serializing statuses for specific order
+    """
+    order_id = serializers.IntegerField(source="id")
+    statuses = StatusSerializer(
+        many=True
+    )
+
+    class Meta:
+        fields = (
+            "order_id",
+            "date",
+            "statuses"
+        )
+        read_only_fields = ("order_id", "date")
+

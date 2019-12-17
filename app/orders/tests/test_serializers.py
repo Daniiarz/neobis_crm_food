@@ -98,3 +98,22 @@ class TestSerializers(TestCase):
         valid = serializer.is_valid()
 
         self.assertTrue(valid)
+
+    def test_status_serializer(self):
+        """
+        Testing status serializer
+        """
+
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        payload = {
+            "name": "In progress",
+            "order_id": order.id
+        }
+
+        serializer = serializers.StatusSerializer(data=payload)
+
+        valid = serializer.is_valid()
+
+        self.assertTrue(valid)
