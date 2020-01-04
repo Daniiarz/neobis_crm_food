@@ -16,7 +16,6 @@ from datetime import timedelta
 from decouple import Csv, config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from django.conf import settings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -33,32 +32,6 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 # Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    # My apps
-    "core",
-    "meals",
-    "orders",
-    "users",
-
-
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'rest_auth.registration',
-
-
-    # 3rd party
-    "rest_framework",
-    'rest_framework.authtoken',
-    'rest_auth'
-]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,6 +59,32 @@ TEMPLATES = [
             ],
         },
     },
+]
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.sites',
+    'django.contrib.staticfiles',
+
+    # My apps
+    "core",
+    "meals",
+    "orders",
+    "users",
+
+    # 3rd party
+    "rest_framework",
+    'rest_framework.authtoken',
+
+    'allauth',
+    'allauth.account',
+
+    'rest_auth',
+    'rest_auth.registration',
+
 ]
 
 WSGI_APPLICATION = 'app.wsgi.application'
@@ -147,15 +146,18 @@ STATIC_URL = '/static/'
 # User Settings
 AUTH_USER_MODEL = "users.User"
 
-REST_AUTH_SERIALIZERS = {
-    'LOGIN_SERIALIZER': 'users.serializers.LoginSerializer',
-    "REGISTER_SERIALIZER": 'users.serializers.SignUpSerializer',
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
+}
+
+REST_AUTH_SERIALIZERS = {
+    'LOGIN_SERIALIZER': 'users.serializers.LoginSerializer',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'users.serializers.SignUpSerializer',
 }
 
 # Allauth

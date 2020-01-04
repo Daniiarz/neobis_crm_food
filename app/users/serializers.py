@@ -111,7 +111,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True, allow_blank=False)
+    login = serializers.CharField(required=True, allow_blank=False)
     password = serializers.CharField(style={'input_type': 'password'})
 
     def authenticate(self, **kwargs):
@@ -157,7 +157,6 @@ class SignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "email",
             "first_name",
             "last_name",
             "email",
@@ -173,12 +172,10 @@ class SignUpSerializer(serializers.ModelSerializer):
                     _("A user is already registered with this e-mail address."))
         return email
 
-    def custom_signup(self, request, user):
-        pass
-
     def get_cleaned_data(self):
+        print(self.validated_data)
         return {
-            'first_name': self.validated_data.get('name', ''),
+            'first_name': self.validated_data.get('first_name', ''),
             'last_name': self.validated_data.get('last_name', ''),
             'role_id': self.validated_data.get('role_id', ''),
             'email': self.validated_data.get('email', ''),
@@ -190,6 +187,6 @@ class SignUpSerializer(serializers.ModelSerializer):
         user = adapter.new_user(request)
         self.cleaned_data = self.get_cleaned_data()
         adapter.save_user(request, user, self)
-        self.custom_signup(request, user)
         setup_user_email(request, user, [])
+
         return user
