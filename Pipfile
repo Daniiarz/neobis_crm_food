@@ -17,6 +17,7 @@ Faker = "==2.0.3"
 Django = "==2.2.8"
 django-rest-auth = "==0.9.5"
 djangorestframework-simplejwt = "==4.4.0"
+django-allauth = "==0.41.0"
 
 [requires]
 python_version = "3.7"

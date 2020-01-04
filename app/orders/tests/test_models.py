@@ -3,12 +3,12 @@ from django.test import TestCase
 
 from meals.tests.utils import SMFactory
 from orders import models
-from .utils import OrderFactory, TableFactory, create_user_model
+from .utils import OrderFactory, TableFactory, create_user_model, ServiceFactory
 
 
 class TestModels(TestCase):
     """
-        Class for testing meals and related models
+    Testing meals and related models
     """
 
     def test_tables(self):
@@ -63,10 +63,32 @@ class TestModels(TestCase):
         with self.assertRaises(IntegrityError):
             OrderFactory(table_id=table)
 
+    def test_create_status(self):
+        """
+        Testing creation of status
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        status = models.Status(order_id=order, name="to do")
+
+        self.assertEqual(str(status), f"{status.order_id}-{status.name}")
+
+    def test_create_service_percentage(self):
+        """
+        Testing creation of service percentage
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        percentage = ServiceFactory(order_id=order, percentage=34)
+
+        self.assertEqual(str(percentage), f"{str(order)}- {34}%")
+
 
 class TestCheckModel(TestCase):
     """
-    Class for testing check model
+    Testing check model
     """
 
     def test_check_model_creation(self):
@@ -97,14 +119,3 @@ class TestCheckModel(TestCase):
         self.assertEqual(check.total_sum, total_sum)
         self.assertEqual(check.service_fee, total_sum / 4)
         self.assertEqual(order.is_open, False)
-
-    def test_create_status(self):
-        """
-        Testing creation of status
-        """
-        user = create_user_model()
-        order = OrderFactory(waiter_id=user)
-
-        status = models.Status(order_id=order, name="to do")
-
-        self.assertEqual(str(status), f"{status.order_id}-{status.name}")

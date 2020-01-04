@@ -47,6 +47,13 @@ INSTALLED_APPS = [
     "orders",
     "users",
 
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+
+
     # 3rd party
     "rest_framework",
     'rest_framework.authtoken',
@@ -142,6 +149,7 @@ AUTH_USER_MODEL = "users.User"
 
 REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'users.serializers.LoginSerializer',
+    "REGISTER_SERIALIZER": 'users.serializers.SignUpSerializer',
 }
 
 REST_FRAMEWORK = {
@@ -150,6 +158,13 @@ REST_FRAMEWORK = {
     )
 }
 
+# Allauth
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "login"
+ACCOUNT_AUTHENTICATION_METHOD = "login"
+
+SITE_ID = 1
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),

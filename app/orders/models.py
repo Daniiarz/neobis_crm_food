@@ -114,3 +114,14 @@ class Status(models.Model):
 
     def __str__(self):
         return f"{self.order_id}-{self.name}"
+
+
+class ServicePercentage(models.Model):
+    """
+    Class for Service Percentage
+    """
+    percentage = models.IntegerField()
+    order_id = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="percentage", primary_key=True)
+
+    def __str__(self):
+        return f"{self.order_id}- {self.percentage}%"

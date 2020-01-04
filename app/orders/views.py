@@ -1,11 +1,12 @@
 from rest_framework import status
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDestroyAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDestroyAPIView, get_object_or_404, \
+    CreateAPIView
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 
 from core.mixins import CustomDeleteMixin
 from . import serializers
-from .models import Check, Order, Status, Table
+from .models import Check, Order, Status, Table, ServicePercentage
 
 
 class TableView(ListCreateAPIView, CustomDeleteMixin):
@@ -120,7 +121,7 @@ class CheckView(ListCreateAPIView, CustomDeleteMixin):
 
 class StatusViews(RetrieveDestroyAPIView, CreateModelMixin):
     """
-    Class responsible for status endpoints
+    View responsible for status endpoints
     """
 
     queryset = Order.objects.all()
@@ -128,16 +129,55 @@ class StatusViews(RetrieveDestroyAPIView, CreateModelMixin):
     lookup_field = "pk"
     serializer_class = serializers.StatusesOfOrder
 
+    def get_serializer_class(self):
+        """
+        Returning serializer depending on request method
+        """
+        method = self.request.method
+
+        if method == "POST":
+            return serializers.StatusSerializer
+
+        return serializers.StatusesOfOrder
+
     def delete(self, request, *args, **kwargs):
         """
-        function responsible for DELETE method, which accepts an id of status and performs delete
+        Function responsible for DELETE method, which accepts an id of status and performs delete
         """
-        instance = get_object_or_404(Status, pk=request.data["pk"])
+        instance = get_object_or_404(Status, pk=request.data["id"])
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def post(self, request, *args, **kwargs):
         """
-        function responsible for POST method, which accepts a status and adds it to order
+        Function responsible for POST method, which accepts a status and adds it to order
         """
-        self.create(request, *args, **kwargs)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save(order_id=self.get_object())
+
+
+class PercentageCreate(CreateAPIView):
+    """
+    View responsible for Service PERCENTAGE Creation
+    """
+    model = ServicePercentage
+    queryset = ServicePercentage.objects.all()
+    serializer_class = serializers.SpSerializer
+
+
+class PercentageView(RetrieveDestroyAPIView):
+    """
+    View responsible for Service PERCENTAGE
+    """
+
+    queryset = ServicePercentage.objects.all()
+    model = ServicePercentage
+    lookup_field = "pk"
+    serializer_class = serializers.SpSerializer
+

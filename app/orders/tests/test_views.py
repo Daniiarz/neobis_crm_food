@@ -5,13 +5,12 @@ from rest_framework.test import APIClient
 
 from meals.tests.utils import MealFactory, SMFactory
 from orders import models, serializers
-from .utils import OrderFactory, TableFactory, create_user_model
+from .utils import OrderFactory, TableFactory, create_user_model, ServiceFactory
 
 TABLES_URL = reverse("tables")
 ORDERS_URL = reverse("orders")
 CHECKS_URL = reverse("checks")
 MEALS_TO_ORDERS = reverse("meals-to-orders")
-STATUSES_URL = reverse("statuses")
 
 
 class TestTableViews(TestCase):
@@ -225,7 +224,7 @@ class TestCheckView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
-class TestStatusPercentageViews(TestCase):
+class TestStatusViews(TestCase):
     """
     Class for testing Status and Service percentage views
     """
@@ -243,7 +242,7 @@ class TestStatusPercentageViews(TestCase):
 
         models.Status(order_id=order, name="Completed")
 
-        response = self.client.get(STATUSES_URL)
+        response = self.client.get(reverse('statuses', args=[order.id]))
 
         serializer = serializers.StatusesOfOrder(order)
 
@@ -264,7 +263,7 @@ class TestStatusPercentageViews(TestCase):
             "name": "Completed"
         }
 
-        response = self.client.post(reverse("statuses"), args=[order.id])
+        response = self.client.post(reverse('statuses', args=[order.id]), data=payload)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -275,10 +274,68 @@ class TestStatusPercentageViews(TestCase):
         user = create_user_model()
         order = OrderFactory(waiter_id=user)
 
-        stat = models.Status(order_id=order, name="Completed")
+        stat = models.Status.objects.create(order_id=order, name="Completed")
+
+        payload = {
+            "id": stat.id
+        }
 
         self.client.force_authenticate(user)
 
-        response = self.client.delete(reverse("statuses"), args=[stat.id])
+        response = self.client.delete(reverse('statuses', args=[order.id]), data=payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class TestPercentageViews(TestCase):
+    """
+    Testing Percentage view
+    """
+
+    def setUp(self) -> None:
+        self.client = APIClient()
+
+    def test_get_service_percentage(self):
+        """
+        Testing GET Method for service view
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        percentage = ServiceFactory(order_id=order)
+
+        response = self.client.get(reverse('percentage', args=[percentage.order_id.id]))
+
+        serializer = serializers.SpSerializer(percentage)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+
+    def test_post_service_percentage(self):
+        """
+        Testing POST Method for service percentage view
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        payload = {
+            "order_id": order.id,
+            "percentage": 13123
+        }
+
+        response = self.client.post(reverse('create_percentage'), data=payload)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_delete_percentage(self):
+        """
+        Testing DELETE Method for service percentage ciew
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        percentage = ServiceFactory(order_id=order)
+
+        response = self.client.delete(reverse('percentage', args=[percentage.order_id.id]))
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

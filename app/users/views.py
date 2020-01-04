@@ -1,4 +1,5 @@
 from rest_framework.generics import ListCreateAPIView
+from rest_auth.registration.views import RegisterView as RView, sensitive_post_parameters_m
 
 from core.mixins import CustomDeleteMixin, CustomUpdateMixin
 from . import serializers
@@ -61,3 +62,11 @@ class UserViews(ListCreateAPIView, CustomDeleteMixin, CustomUpdateMixin):
         function responsible for PATCH method defined in CustomUpdateMixin
         """
         return self.partial_update(request, *args, **kwargs)
+
+
+class RegisterView(RView):
+    """
+    Register view
+    """
+    serializer_class = serializers.SignUpSerializer
+

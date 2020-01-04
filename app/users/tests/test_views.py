@@ -184,3 +184,8 @@ class TestUserEndpoints(TestCase):
         self.assertEqual(response_data["email"], payload["email"])
         self.assertEqual(response_data["phone"], payload["phone"])
         self.assertEqual(response_data["role_id"], payload["role_id"])
+
+    def test_user_registration(self):
+        """
+        Testing User registration
+        """

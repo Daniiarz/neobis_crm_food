@@ -46,3 +46,15 @@ class OrderFactory(factory.django.DjangoModelFactory):
 
     table_id = factory.SubFactory(TableFactory)
     waiter_id = create_user_model()
+
+
+class ServiceFactory(factory.django.DjangoModelFactory):
+    """
+    Class for creating fake Percentage models
+    """
+
+    class Meta:
+        model = models.ServicePercentage
+
+    order_id = factory.SubFactory(OrderFactory)
+    percentage = fake.pyint(min_value=1, max_value=100, step=1)

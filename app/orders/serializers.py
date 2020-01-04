@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from meals.models import SpecificMeal
 from meals.serializers import SmSerializer
-from .models import Check, Order, Table, Status
+from .models import Check, Order, Table, Status, ServicePercentage
 
 
 class TableSerializer(serializers.ModelSerializer):
@@ -134,12 +134,14 @@ class StatusesOfOrder(serializers.ModelSerializer):
     """
     Serializing statuses for specific order
     """
-    order_id = serializers.IntegerField(source="id")
+    order_id = serializers.IntegerField(source="id", read_only=True)
     statuses = StatusSerializer(
-        many=True
+        many=True,
+        read_only=True
     )
 
     class Meta:
+        model = Order
         fields = (
             "order_id",
             "date",
@@ -147,3 +149,18 @@ class StatusesOfOrder(serializers.ModelSerializer):
         )
         read_only_fields = ("order_id", "date")
 
+
+class SpSerializer(serializers.ModelSerializer):
+    """
+    Serializing service percentage
+    """
+    order_id = serializers.PrimaryKeyRelatedField(
+        queryset=Order.objects.all()
+    )
+
+    class Meta:
+        model = ServicePercentage
+        fields = (
+            "order_id",
+            "percentage"
+        )

@@ -117,3 +117,21 @@ class TestSerializers(TestCase):
         valid = serializer.is_valid()
 
         self.assertTrue(valid)
+
+    def test_service_percentage_serializer(self):
+        """
+        Testing service percentage serializer
+        """
+        user = create_user_model()
+        order = OrderFactory(waiter_id=user)
+
+        payload = {
+            "order_id": order.id,
+            "percentage": 34,
+        }
+
+        serializer = serializers.SpSerializer(data=payload)
+        valid = serializer.is_valid()
+        print(serializer.errors)
+
+        self.assertTrue(valid)
