@@ -8,12 +8,12 @@ from .utils import RoleFactory, fake
 
 class TestUserModel(TestCase):
     """
-        Testing publicly available endpoints for user app
+    Testing publicly available endpoints for user app
     """
 
     def setUp(self):
         """
-            Initial setUp for all tests
+        Initial setUp for all tests
         """
         self.role = RoleFactory()
         self.user_data = {
@@ -26,7 +26,7 @@ class TestUserModel(TestCase):
 
     def test_create_user_without_role(self):
         """
-            Testing that user can't be created without role model
+        Testing that user can't be created without role model
         """
 
         role = None
@@ -37,7 +37,7 @@ class TestUserModel(TestCase):
 
     def test_create_user_without_first_name(self):
         """
-            Testing that user model can't be created without first name
+        Testing that user model can't be created without first name
         """
 
         first_name = ""
@@ -48,7 +48,7 @@ class TestUserModel(TestCase):
 
     def test_create_user_without_last_name(self):
         """
-            Testing that user model can't be created without last name
+        Testing that user model can't be created without last name
         """
 
         last_name = ""
@@ -59,7 +59,7 @@ class TestUserModel(TestCase):
 
     def test_create_user_without_phone_number(self):
         """
-            Testing that user model can't be created without phone number
+        Testing that user model can't be created without phone number
         """
 
         phone = ""
@@ -77,7 +77,7 @@ class TestUserModel(TestCase):
 
     def test_create_user_model(self):
         """
-            Testing creation of user model
+        Testing creation of user model
         """
 
         role = self.role
@@ -89,7 +89,7 @@ class TestUserModel(TestCase):
 
     def test_user_login(self):
         """
-            Testing user login field
+        Testing user login field
         """
 
         user = User.objects.create_user(**self.user_data)
@@ -98,9 +98,9 @@ class TestUserModel(TestCase):
 
     def test_create_super_user(self):
         """
-            Testing creation of super user
+        Testing creation of super user
         """
 
-        user = User.objects.create_superuser(**self.user_data)
+        user = User.objects.create_superuser("admin", self.role.id, "admin")
 
         self.assertTrue(user.is_superuser)

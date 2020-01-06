@@ -144,6 +144,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # User Settings
+
 AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
@@ -165,8 +166,16 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "login"
 ACCOUNT_AUTHENTICATION_METHOD = "login"
+ACCOUNT_EMAIL_VERIFICATION = None
 
 SITE_ID = 1
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
+
+# JWT
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),

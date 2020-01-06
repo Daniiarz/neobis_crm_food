@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 
 from users import serializers
 from users.models import Role, User
-from .utils import RoleFactory, fake
+from .utils import RoleFactory, fake, get_fake_user_data
 
 ROLES_URL = reverse("roles")
 
@@ -78,14 +78,11 @@ class TestUserEndpoints(TestCase):
         Initial setUp for all tests
         """
         self.role = RoleFactory()
-        self.user_data = {
-            "email": fake.email(),
-            "first_name": fake.first_name(),
-            "last_name": fake.last_name(),
-            "phone": fake.phone_number(),
-            "role_id": self.role,
-        }
+        self.user_data = get_fake_user_data(self.role)
         self.client = APIClient()
+
+        user = User.objects.create_user(**get_fake_user_data(self.role))
+        self.client.force_authenticate(user)
 
     def test_get_all_users(self):
         """
@@ -127,10 +124,10 @@ class TestUserEndpoints(TestCase):
         user = User.objects.create_user(**self.user_data)
 
         payload = {
-            'id': user.id
+            'id': user.pk
         }
 
-        response = self.client.delete(USERS_URL, payload, format="json")
+        response = self.client.delete(USERS_URL, data=payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -189,3 +186,32 @@ class TestUserEndpoints(TestCase):
         """
         Testing User registration
         """
+        self.user_data["role_id"] = self.role.id
+        response = self.client.post(reverse("register"), self.user_data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.assertIn("token", response.data)
+
+    def test_user_login(self):
+        """
+        Testing User login and token
+        """
+        self.client.logout()
+
+        user = User.objects.create_user(**self.user_data)
+        payload = {
+            "login": user.login,
+            "password": user.phone
+        }
+        response = self.client.post(reverse("token_obtain_pair"), data=payload)
+
+        self.assertIn("access", response.data)
+
+        token = response.data["access"]
+
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+
+        response2 = self.client.get(reverse("users"))
+
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)

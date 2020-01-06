@@ -117,11 +117,11 @@ class LoginSerializer(serializers.Serializer):
     def authenticate(self, **kwargs):
         return authenticate(self.context['request'], **kwargs)
 
-    def _validate_username(self, username, password):
+    def _validate_login(self, login, password):
         user = None
 
-        if username and password:
-            user = self.authenticate(username=username, password=password)
+        if login and password:
+            user = self.authenticate(username=login, password=password)
         else:
             msg = _('Must include "username" and "password".')
             raise exceptions.ValidationError(msg)
@@ -129,13 +129,13 @@ class LoginSerializer(serializers.Serializer):
         return user
 
     def validate(self, attrs):
-        username = attrs.get('username')
+        login = attrs.get('login')
         password = attrs.get('password')
 
         user = None
 
         # Authenticate user
-        user = self._validate_username(username, password)
+        user = self._validate_login(login, password)
 
         # Did we get back an active user?
         if user:
@@ -173,7 +173,6 @@ class SignUpSerializer(serializers.ModelSerializer):
         return email
 
     def get_cleaned_data(self):
-        print(self.validated_data)
         return {
             'first_name': self.validated_data.get('first_name', ''),
             'last_name': self.validated_data.get('last_name', ''),
@@ -186,7 +185,6 @@ class SignUpSerializer(serializers.ModelSerializer):
         adapter = get_adapter()
         user = adapter.new_user(request)
         self.cleaned_data = self.get_cleaned_data()
-        adapter.save_user(request, user, self)
+        adapter.save_user(request, user, self, True)
         setup_user_email(request, user, [])
-
         return user

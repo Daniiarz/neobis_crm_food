@@ -1,5 +1,8 @@
+from rest_framework import status
 from rest_framework.generics import ListCreateAPIView
 from rest_auth.registration.views import RegisterView as RView, sensitive_post_parameters_m
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from core.mixins import CustomDeleteMixin, CustomUpdateMixin
 from . import serializers
@@ -27,6 +30,7 @@ class UserViews(ListCreateAPIView, CustomDeleteMixin, CustomUpdateMixin):
     """
     model = User
     queryset = User.objects.all()
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self):
         return self.custom_get_object()
@@ -70,3 +74,18 @@ class RegisterView(RView):
     """
     serializer_class = serializers.SignUpSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            {
+                'login': user.login,
+                'password': user.phone,
+                'token': self.get_response_data(user)["key"]
+            },
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )

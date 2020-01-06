@@ -132,6 +132,5 @@ class TestSerializers(TestCase):
 
         serializer = serializers.SpSerializer(data=payload)
         valid = serializer.is_valid()
-        print(serializer.errors)
 
         self.assertTrue(valid)
