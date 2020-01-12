@@ -2,17 +2,22 @@ FROM python:3.7-alpine
 MAINTAINER daniiarz
 
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+RUN mkdir /src
+RUN mkdir /src/app
+# Setting working directory, so we can easily execute commands like manage.py
+WORKDIR /src/
+COPY ./app /src/app
+RUN mkdir /src/requirements
+COPY ./requirements /src/requirements
+COPY Pipfile Pipfile.lock /src/
 
-COPY ./requirements.txt /requirements.txt
-RUN apk add --update --no-cache postgresql-client
-RUN apk add --update --no-cache --virtual .tmp-build-deps \
-      gcc libc-dev linux-headers postgresql-dev
-RUN pip install -r /requirements.txt
-RUN apk del .tmp-build-deps
+RUN apk add --update --no-cache python3 python3-dev postgresql-client postgresql-dev build-base gettext
+RUN pip install --upgrade pip
+RUN pip install pipenv
 
-RUN mkdir /app
-WORKDIR /app
-COPY ./app ./app
+RUN pip install -r requirements/production.txt
 
 RUN adduser -D user
 USER user
+
